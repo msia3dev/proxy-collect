@@ -7,12 +7,16 @@ import (
 	"github.com/tongsq/go-lib/logger"
 	"proxy-collect/dao"
 	"proxy-collect/service/ip"
+	"proxy-collect/config"
 )
 
 type UpdateIpInfo struct {
 }
 
 func (s UpdateIpInfo) Run() {
+    if !config.Get().UpdateIpInfo {
+        return
+    }
 	logger.FSuccess("update ip info start run")
 	proxies := dao.ProxyDao.GetNeedUpdateInfoList()
 	logger.FInfo(fmt.Sprintf("count:%d, cap: %d\n", len(proxies), cap(proxies)))
