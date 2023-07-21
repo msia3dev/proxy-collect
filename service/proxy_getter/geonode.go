@@ -19,10 +19,23 @@ type geonode struct {
 
 func (s *geonode) GetUrlList() []string {
 	list := []string{
-		"https://proxylist.geonode.com/api/proxy-list?limit=50&page=1&sort_by=lastChecked&sort_type=desc",
+		"https://proxylist.geonode.com/api/proxy-list?limit=500&page=1&sort_by=lastChecked&sort_type=desc",
 	}
-	for i := 2; i < 4; i++ {
-		list = append(list, fmt.Sprintf("https://proxylist.geonode.com/api/proxy-list?limit=50&page=%d&sort_by=lastChecked&sort_type=desc", i))
+
+	body := s.GetContentHtml(list[0])
+	result := geonodeResult{}
+    err := json.Unmarshal([]byte(body), &result)
+    if err != nil {
+        logger.Error("json parse fail", logger.Fields{"err": err})
+        return nil
+    }
+
+    pages := result.Total / result.Limit
+
+    logger.Success("geonode pages", logger.Fields{"pages": pages})
+
+	for i := 2; i < pages; i++ {
+		list = append(list, fmt.Sprintf("https://proxylist.geonode.com/api/proxy-list?limit=500&page=%d&sort_by=lastChecked&sort_type=desc", i))
 	}
 	return list
 }
@@ -86,12 +99,12 @@ type geonodeResult struct {
 		Speed              int         `json:"speed"`
 		UpdatedAt          time.Time   `json:"updated_at"`
 		WorkingPercent     interface{} `json:"workingPercent"`
-		UpTime             int         `json:"upTime"`
+		UpTime             float32      `json:"upTime"`
 		UpTimeSuccessCount int         `json:"upTimeSuccessCount"`
 		UpTimeTryCount     int         `json:"upTimeTryCount"`
 		HostName           interface{} `json:"hostName,omitempty"`
 	} `json:"data"`
 	Total int    `json:"total"`
-	Page  string `json:"page"`
-	Limit string `json:"limit"`
+	Page  int    `json:"page"`
+	Limit int    `json:"limit"`
 }
