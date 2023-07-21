@@ -1,0 +1,23 @@
+CREATE TABLE `proxy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `host` varchar(255) NOT NULL DEFAULT '',
+  `port` int(11) NOT NULL DEFAULT '0',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '0:无效，1：有效',
+  `create_time` int(11) NOT NULL DEFAULT '0',
+  `update_time` int(11) NOT NULL DEFAULT '0',
+  `active_time` int(11) NOT NULL DEFAULT '0',
+  `country` varchar(100) NOT NULL DEFAULT '',
+  `region` varchar(100) NOT NULL DEFAULT '',
+  `city` varchar(100) NOT NULL DEFAULT '',
+  `isp` varchar(255) NOT NULL DEFAULT '',
+  `check_count` int(11) NOT NULL DEFAULT '10',
+  `source` varchar(50) NOT NULL DEFAULT '',
+  `proto` varchar(20) NOT NULL DEFAULT 'http',
+  `user` varchar(50) NOT NULL DEFAULT '',
+  `password` varchar(50) NOT NULL DEFAULT '',
+  `ping` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `IDX_HOST_PORT_PROTO` (`host`,`port`, `proto`) USING BTREE,
+  KEY `IDX_STATUS` (`status`) USING BTREE,
+  KEY `IDX_ACTIVE_TIME` (`active_time`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT
