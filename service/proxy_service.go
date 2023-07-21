@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"reflect"
 	"regexp"
 	"sync"
@@ -36,14 +37,24 @@ func (s proxyService) TransferProxyDto(proxy *dto.ProxyDto) *request.ProxyDto {
 }
 
 func (s *proxyService) CheckIpStatus(proxy *dto.ProxyDto) (bool, int64) {
-	u := "https://www.baidu.com"
+	u := "https://www.binance.com/en"
 	h := &request.HeaderDto{
 		UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36",
 	}
 	t := time.Now()
-	_, err := request.Get(u, request.NewOptions().WithHeader(h).WithProxy(s.TransferProxyDto(proxy)).WithTimeout(global.MaxPing))
+	resp, err := request.Get(u, request.NewOptions().WithHeader(h).WithProxy(s.TransferProxyDto(proxy)).WithTimeout(global.MaxPing))
 	duration := time.Now().Sub(t)
-	return err == nil, int64(duration / time.Millisecond)
+	gateway, ok := resp.Header["X-Gateway"]
+	var found bool = false
+	if ok {
+        for _, g := range gateway {
+            if strings.Compare(g, "traefik") == 0 {
+                found = true
+                break
+            }
+        }
+    }
+	return err == nil && strings.Contains(resp.Body, "binance") && found, int64(duration / time.Millisecond)
 }
 
 func (s *proxyService) CheckProxyAndSave(p dto.ProxyDto) {
