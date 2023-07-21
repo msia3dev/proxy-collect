@@ -52,12 +52,14 @@ func (s *getProxyIp3366) ParseHtml(body string) [][]string {
 		host := strings.TrimSpace(td.Text())
 		td2 := selection.ChildrenFiltered("td").Eq(1)
 		port := strings.TrimSpace(td2.Text())
+		td3 := selection.ChildrenFiltered("td").Eq(3)
+        proxyType := strings.ToLower(strings.TrimSpace(td3.Text()))
 
 		if !common.CheckProxyFormat(host, port) {
 			logger.Error(consts.PROXY_FORMAT_ERROR, logger.Fields{"host": host, "port": port})
 			return
 		}
-		proxyArr := []string{host, port}
+		proxyArr := []string{host, port, proxyType}
 		proxyList = append(proxyList, proxyArr)
 	})
 	return proxyList
