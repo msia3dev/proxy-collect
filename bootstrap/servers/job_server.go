@@ -17,7 +17,7 @@ func StartJobServer() {
 	jobs := []JobItem{
 		{"*/3 * * * *", scheduler.GetIp{}},
 		{"*/2 * * * *", scheduler.CheckActiveIp{}},
-		{"@every 5h", scheduler.CheckFailIp{}},
+		{"@every 5m", scheduler.CheckFailIp{}},
 		{"@every 5m", scheduler.UpdateIpInfo{}},
 		{"@every 1m", scheduler.RecheckIp{}},
 	}
