@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/tongsq/go-lib/logger"
+	"github.com/tongsq/go-lib/request"
 	"proxy-collect/consts"
-	"proxy-collect/global"
 )
 
 func NewGetProxyGeonode() *geonode {
@@ -15,6 +15,11 @@ func NewGetProxyGeonode() *geonode {
 }
 
 type geonode struct {
+}
+
+var CommonHeader = &request.HeaderDto{
+	Other: map[string]string{ "Origin": "https://geonode.com" },
+	UserAgent: consts.USER_AGENT,
 }
 
 func (s *geonode) GetUrlList() []string {
@@ -41,7 +46,7 @@ func (s *geonode) GetUrlList() []string {
 }
 func (s *geonode) GetContentHtml(requestUrl string) string {
 	logger.Info("get proxy from geonode.com", logger.Fields{"url": requestUrl})
-	data, err := global.SimpleGet(requestUrl)
+	data, err := request.Get(requestUrl, request.NewOptions().WithHeader(CommonHeader))
 	if err != nil || data == nil {
 		logger.Error("get proxy from geonode.com fail", logger.Fields{"err": err, "data": data})
 		return ""
